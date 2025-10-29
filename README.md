@@ -103,6 +103,19 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+### 7. Set Up GitHub Webhooks (Need to sync issues with YouTrack)
+
+For local testing, follow the [GitHub webhook testing guide](https://docs.github.com/en/webhooks/testing-and-troubleshooting-webhooks/testing-webhooks#testing-webhook-code-locally) using [smee.io](https://smee.io/).
+
+Quick setup:
+
+1. Get a webhook proxy URL from [smee.io](https://smee.io/)
+2. Install smee client: `npm install --global smee-client`
+3. Configure webhook in your GitHub repo with the smee.io URL
+4. Start forwarding: `smee --url YOUR_SMEE_URL --path /api/webhook --port 3000`
+
+For production, use your actual domain URL (e.g., `https://yourdomain.com/api/webhook`).
+
 ## Usage
 
 1. Click **"Sign in with GitHub"** on the homepage
