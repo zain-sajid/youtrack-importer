@@ -2,6 +2,8 @@
 
 A web application that seamlessly imports GitHub issues into YouTrack projects. Built with Next.js, this tool provides an intuitive interface for migrating your issue tracking from GitHub to YouTrack.
 
+<img width="1368" height="691" alt="CleanShot 2025-10-29 at 13 22 49" src="https://github.com/user-attachments/assets/b913c89e-9f1e-4170-904e-2f84f9edcdb7" />
+
 ## Prerequisites
 
 Before setting up the project, ensure you have:
