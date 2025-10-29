@@ -2,37 +2,6 @@
 
 A web application that seamlessly imports GitHub issues into YouTrack projects. Built with Next.js, this tool provides an intuitive interface for migrating your issue tracking from GitHub to YouTrack.
 
-## Overview
-
-YouTrack Importer allows you to:
-
-- **Authenticate** with GitHub using OAuth using BetterAuth
-- **Browse** your GitHub repositories with pagination
-- **Select** a target YouTrack project
-- **Import** all issues from a GitHub repository to YouTrack
-- **Track** import progress in real-time
-
-## How It Works
-
-1. **Sign In**: Users authenticate with their GitHub account
-2. **Select Repository**: Browse and select a GitHub repository from your repos (additional permission needed for private repos)
-3. **Choose YouTrack Project**: Select the destination YouTrack project from a dropdown
-4. **Import**: Click "Import Issues" to start the migration process
-5. **Webhooks**: Automatically sync your GitHub issues with YouTrack issues
-
-The application preserves issue details including:
-
-- Title and description
-- Labels (prefixed with `youtrack:` in GitHub)
-- Issue state (open/closed)
-
-## Architecture
-
-- **Frontend**: Next.js 16 with React 19, TypeScript, and Tailwind CSS
-- **Authentication**: Better Auth with GitHub OAuth provider
-- **Database**: PostgreSQL (for authentication sessions)
-- **APIs**: GitHub REST API (via Octokit) and YouTrack REST API
-
 ## Prerequisites
 
 Before setting up the project, ensure you have:
@@ -116,15 +85,32 @@ Quick setup:
 
 For production, use your actual domain URL (e.g., `https://yourdomain.com/api/webhook`).
 
-## Usage
+## Overview
 
-1. Click **"Sign in with GitHub"** on the homepage
-2. Authorize the application to access your GitHub account
-3. Browse your repositories using the pagination controls
-4. Click **"Select"** on the repository you want to import from
-5. Choose a **YouTrack project** from the dropdown
-6. Click **"Import Issues"** to start the migration
-7. Monitor the progress and review the import results
+YouTrack Importer allows you to:
+
+- **Authenticate** with GitHub using OAuth using BetterAuth
+- **Browse** your GitHub repositories with pagination
+- **Select** a target YouTrack project
+- **Import** all issues from a GitHub repository to YouTrack
+- **Track** import progress in real-time
+
+## How It Works
+
+1. **Sign In**: Users authenticate with their GitHub account
+2. **Select Repository**: Browse and select a GitHub repository from your repos (additional permission needed for private repos)
+3. **Choose YouTrack Project**: Select the destination YouTrack project from a dropdown
+4. **Import**: Click "Import Issues" to start the migration process
+5. **Webhooks**: Automatically sync your GitHub issues with YouTrack issues
+
+Important: Only issues with `youtrack` labels are synced with YouTrack issues.
+
+## Architecture
+
+- **Frontend**: Next.js 16 with React 19, TypeScript, and Tailwind CSS
+- **Authentication**: Better Auth with GitHub OAuth provider
+- **Database**: PostgreSQL (for authentication sessions)
+- **APIs**: GitHub REST API (via Octokit) and YouTrack REST API
 
 ## Technologies Used
 
