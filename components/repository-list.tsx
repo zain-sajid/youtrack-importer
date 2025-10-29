@@ -143,7 +143,7 @@ export function RepositoryList({
         </div>
       ) : (
         <>
-          <div className="space-y-2 max-h-96 overflow-y-auto p-1">
+          <div className="space-y-2 overflow-y-auto p-1">
             {repos.length > 0 ? (
               repos.map((repo) => (
                 <div

@@ -1,4 +1,12 @@
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useYoutrackProjects } from "@/hooks/use-youtrack-projects";
 
 type ImportFormProps = {
   selectedRepo: any;
@@ -17,6 +25,8 @@ export function ImportForm({
   onImport,
   onCancel,
 }: ImportFormProps) {
+  const { projects, loading, error } = useYoutrackProjects();
+
   return (
     <div className="mt-6 p-4 border rounded-lg">
       <h3 className="text-sm font-semibold mb-2">Import Issues to YouTrack</h3>
@@ -26,21 +36,39 @@ export function ImportForm({
       <div className="space-y-3">
         <div>
           <label className="block text-sm font-medium mb-1">
-            YouTrack Project ID
+            YouTrack Project
           </label>
-          <input
-            type="text"
-            value={youtrackProjectId}
-            onChange={(e) => onYoutrackProjectIdChange(e.target.value)}
-            placeholder="e.g., 0-0"
-            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            disabled={importing}
-          />
+          {loading ? (
+            <div className="w-full px-3 py-2 border rounded bg-gray-50 text-gray-500">
+              Loading projects...
+            </div>
+          ) : error ? (
+            <div className="w-full px-3 py-2 border rounded bg-red-50 text-red-600 text-sm">
+              Error: {error}
+            </div>
+          ) : (
+            <Select
+              value={youtrackProjectId}
+              onValueChange={onYoutrackProjectIdChange}
+              disabled={importing || loading}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a project" />
+              </SelectTrigger>
+              <SelectContent>
+                {projects.map((project) => (
+                  <SelectItem key={project.id} value={project.id}>
+                    {project.name} ({project.shortName})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
         <div className="flex gap-2">
           <Button
             onClick={onImport}
-            disabled={importing || !youtrackProjectId}
+            disabled={importing || !youtrackProjectId || loading}
             className="flex-1"
           >
             {importing ? "Importing..." : "Import Issues"}

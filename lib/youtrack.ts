@@ -4,14 +4,29 @@ type CreateIssueParams = {
   projectId: string;
   summary: string;
   description: string;
+  type?: string;
 };
 
 export async function createYouTrackIssue({
   projectId,
   summary,
   description,
+  type,
 }: CreateIssueParams) {
   try {
+    const customFields = [];
+
+    // Add Type custom field if provided
+    if (type) {
+      customFields.push({
+        name: "Type",
+        $type: "SingleEnumIssueCustomField",
+        value: {
+          name: type,
+        },
+      });
+    }
+
     const response = await axios.post(
       `${process.env.YOUTRACK_BASE_URL}/api/issues`,
       {
@@ -20,6 +35,7 @@ export async function createYouTrackIssue({
         },
         summary,
         description,
+        ...(customFields.length > 0 && { customFields }),
       },
       {
         headers: {

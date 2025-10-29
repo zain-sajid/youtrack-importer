@@ -30,7 +30,7 @@ export default function Home() {
     setYoutrackProjectId,
     importing,
     importResult,
-    setImportResult,
+    resetImportResult,
     handleImportIssues,
     cancelImport,
   } = useIssueImport();
@@ -77,7 +77,7 @@ export default function Home() {
         {importResult && (
           <ImportResult
             result={importResult}
-            onDismiss={() => setImportResult(null)}
+            onDismiss={resetImportResult}
           />
         )}
 
