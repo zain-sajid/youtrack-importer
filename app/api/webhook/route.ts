@@ -5,8 +5,6 @@ export async function POST(request: NextRequest) {
   try {
     const payload = await request.json();
 
-    console.log("payload", payload);
-
     switch (payload.action) {
       case "closed": {
         const youtrackIssueId = getYouTrackIssueId(payload);
