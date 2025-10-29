@@ -1,10 +1,10 @@
 import axios from "axios";
 
-interface CreateIssueParams {
+type CreateIssueParams = {
   projectId: string;
   summary: string;
   description: string;
-}
+};
 
 export async function createYouTrackIssue({
   projectId,
@@ -36,10 +36,10 @@ export async function createYouTrackIssue({
   }
 }
 
-interface UpdateIssueStateParams {
+type UpdateIssueStateParams = {
   issueId: string;
   stateName: string;
-}
+};
 
 export async function updateIssueState({
   issueId,

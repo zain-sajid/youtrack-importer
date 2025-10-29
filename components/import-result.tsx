@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 
-interface ImportResultProps {
+type ImportResultProps = {
   result: {
     message: string;
   };
   onDismiss: () => void;
-}
+};
 
 export function ImportResult({ result, onDismiss }: ImportResultProps) {
   return (
@@ -14,14 +14,9 @@ export function ImportResult({ result, onDismiss }: ImportResultProps) {
         ✓ Import Successful
       </h3>
       <p className="text-sm text-green-700">{result.message}</p>
-      <Button
-        onClick={onDismiss}
-        variant="outline"
-        className="mt-3 w-full"
-      >
+      <Button onClick={onDismiss} variant="outline" className="mt-3 w-full">
         Dismiss
       </Button>
     </div>
   );
 }
-

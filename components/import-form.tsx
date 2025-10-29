@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 
-interface ImportFormProps {
+type ImportFormProps = {
   selectedRepo: any;
   youtrackProjectId: string;
   importing: boolean;
   onYoutrackProjectIdChange: (value: string) => void;
   onImport: () => void;
   onCancel: () => void;
-}
+};
 
 export function ImportForm({
   selectedRepo,
@@ -19,12 +19,9 @@ export function ImportForm({
 }: ImportFormProps) {
   return (
     <div className="mt-6 p-4 border rounded-lg">
-      <h3 className="text-sm font-semibold mb-2">
-        Import Issues to YouTrack
-      </h3>
+      <h3 className="text-sm font-semibold mb-2">Import Issues to YouTrack</h3>
       <p className="text-sm mb-3">
-        Selected:{" "}
-        <span className="font-medium">{selectedRepo.full_name}</span>
+        Selected: <span className="font-medium">{selectedRepo.full_name}</span>
       </p>
       <div className="space-y-3">
         <div>
@@ -48,11 +45,7 @@ export function ImportForm({
           >
             {importing ? "Importing..." : "Import Issues"}
           </Button>
-          <Button
-            onClick={onCancel}
-            variant="outline"
-            disabled={importing}
-          >
+          <Button onClick={onCancel} variant="outline" disabled={importing}>
             Cancel
           </Button>
         </div>
@@ -60,4 +53,3 @@ export function ImportForm({
     </div>
   );
 }
-

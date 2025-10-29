@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-interface UseIssueImportReturn {
+type UseIssueImportReturn = {
   selectedRepo: any | null;
   setSelectedRepo: (repo: any | null) => void;
   youtrackProjectId: string;
@@ -10,7 +10,7 @@ interface UseIssueImportReturn {
   setImportResult: (result: any) => void;
   handleImportIssues: () => Promise<void>;
   cancelImport: () => void;
-}
+};
 
 export function useIssueImport(): UseIssueImportReturn {
   const [selectedRepo, setSelectedRepo] = useState<any | null>(null);
@@ -75,4 +75,3 @@ export function useIssueImport(): UseIssueImportReturn {
     cancelImport,
   };
 }
-
