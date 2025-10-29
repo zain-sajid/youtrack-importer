@@ -3,39 +3,44 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { Octokit } from "octokit";
 
+const DEFAULT_PAGE = 1;
+const DEFAULT_PER_PAGE = 10;
+const GITHUB_PROVIDER_ID = "github";
+
+type PaginationParams = {
+  page: number;
+  perPage: number;
+};
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page") || "1", 10);
-    const perPage = parseInt(searchParams.get("per_page") || "10", 10);
+    const { page, perPage } = parsePaginationParams(searchParams);
 
     const headersList = await headers();
-
-    const session = await auth.api.getSession({
-      headers: headersList,
-    });
+    const session = await auth.api.getSession({ headers: headersList });
 
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { accessToken } = await auth.api.getAccessToken({
-      body: {
-        providerId: "github",
-      },
+      body: { providerId: GITHUB_PROVIDER_ID },
       headers: headersList,
     });
 
-    const octokit = new Octokit({
-      auth: accessToken,
-    });
+    const octokit = new Octokit({ auth: accessToken });
 
     const userResponse = await octokit.rest.users.getAuthenticated();
-    const scopes = userResponse.headers["x-oauth-scopes"];
-    const scopeArray = scopes ? scopes.split(", ") : [];
-    const hasRepoScope = scopeArray.includes("repo");
+    const scopes = parseScopes(userResponse.headers["x-oauth-scopes"]);
+    const hasRepoScope = scopes.includes("repo");
 
-    const response = await octokit.rest.repos.listForAuthenticatedUser({
+    const totalRepos = hasRepoScope
+      ? userResponse.data.public_repos +
+        (userResponse.data.total_private_repos || 0)
+      : userResponse.data.public_repos;
+
+    const reposResponse = await octokit.rest.repos.listForAuthenticatedUser({
       per_page: perPage,
       page: page,
       sort: "updated",
@@ -43,37 +48,42 @@ export async function GET(request: Request) {
       visibility: hasRepoScope ? "all" : "public",
     });
 
-    const repos = response.data;
-    const totalRepos = hasRepoScope
-      ? userResponse.data.public_repos +
-        (userResponse.data.total_private_repos || 0)
-      : userResponse.data.public_repos;
-
-    const linkHeader = response.headers.link;
-
-    let hasNextPage = false;
-    let hasPrevPage = page > 1;
-
-    if (linkHeader) {
-      hasNextPage = linkHeader.includes('rel="next"');
-    }
-
     return NextResponse.json({
-      repos,
+      repos: reposResponse.data,
       totalRepos,
       limitedScope: !hasRepoScope,
       pagination: {
         page,
         perPage,
-        hasNextPage,
-        hasPrevPage,
+        hasNextPage: hasNextPageInLink(reposResponse.headers.link),
+        hasPrevPage: page > 1,
       },
     });
   } catch (error) {
-    console.error("Error fetching repos:", error);
+    console.error("Error fetching GitHub repositories:", error);
     return NextResponse.json(
-      { error: "Failed to fetch repos" },
+      { error: "Failed to fetch repositories" },
       { status: 500 }
     );
   }
+}
+
+function parsePaginationParams(
+  searchParams: URLSearchParams
+): PaginationParams {
+  return {
+    page: parseInt(searchParams.get("page") || String(DEFAULT_PAGE), 10),
+    perPage: parseInt(
+      searchParams.get("per_page") || String(DEFAULT_PER_PAGE),
+      10
+    ),
+  };
+}
+
+function parseScopes(scopeHeader: string | undefined): string[] {
+  return scopeHeader?.split(", ") ?? [];
+}
+
+function hasNextPageInLink(linkHeader: string | undefined): boolean {
+  return linkHeader?.includes('rel="next"') ?? false;
 }
