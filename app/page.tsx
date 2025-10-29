@@ -60,7 +60,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-8">
-      <div className="max-w-lg w-full bg-white shadow-lg rounded-lg p-8">
+      <div className="max-w-lg w-full bg-white border rounded-lg p-8">
         <UserProfile />
 
         {selectedRepo && (

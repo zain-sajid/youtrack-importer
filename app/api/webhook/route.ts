@@ -5,17 +5,15 @@ export async function POST(request: NextRequest) {
   try {
     const payload = await request.json();
 
+    console.log("payload", payload);
+
     switch (payload.action) {
       case "closed":
-        console.log("payload", payload.issue.labels);
         const labels = payload.issue.labels.map((label: any) => label.name);
-        console.log("labels", labels);
         const youtrackLabel = labels.find((label: any) =>
           label.startsWith("youtrack:")
         );
-        console.log("youtrackLabel", youtrackLabel);
         const youtrackIssueId = youtrackLabel.split(":")[1];
-        console.log("youtrackIssueId", youtrackIssueId);
         await updateIssueState({
           issueId: youtrackIssueId,
           stateName: "Fixed",

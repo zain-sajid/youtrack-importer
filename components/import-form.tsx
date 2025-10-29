@@ -18,7 +18,7 @@ export function ImportForm({
   onCancel,
 }: ImportFormProps) {
   return (
-    <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+    <div className="mt-6 p-4 border rounded-lg">
       <h3 className="text-sm font-semibold mb-2">
         Import Issues to YouTrack
       </h3>
