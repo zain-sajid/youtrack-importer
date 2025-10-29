@@ -15,14 +15,24 @@ const TYPE_LABELS = [
   "Task",
   "Usability Problem",
   "Performance Problem",
-  "Еріс",
+  "Epic",
 ];
+
+type GitHubLabel = {
+  id?: number;
+  node_id?: string;
+  url?: string;
+  name?: string;
+  color?: string | null;
+  default?: boolean;
+  description?: string | null;
+};
 
 type GitHubIssue = {
   number: number;
   title: string;
   body?: string | null;
-  labels?: Array<string | { name?: string }>;
+  labels?: Array<string | GitHubLabel>;
 };
 
 type YouTrackIssue = {
@@ -98,11 +108,7 @@ async function importIssues({
   const createdIssues: YouTrackIssue[] = [];
 
   for (const issue of issues) {
-    console.log("issue", issue);
-    
-    // Extract Type from labels if present
     const issueType = extractTypeFromLabels(issue.labels);
-    
     const youtrackIssue = await createYouTrackIssue({
       projectId,
       summary: issue.title,
@@ -147,17 +153,18 @@ async function addYouTrackLabel({
 }
 
 function extractTypeFromLabels(
-  labels?: Array<string | { name?: string }>
+  labels?: Array<string | GitHubLabel>
 ): string | undefined {
-  if (!labels) return undefined;
+  if (!labels) return;
 
   for (const label of labels) {
     const labelName = typeof label === "string" ? label : label.name;
     if (!labelName) continue;
 
     const matchedType = TYPE_LABELS.find(
-      (type) => type.toLowerCase() === labelName.toLowerCase()
+      (type) => type.toLowerCase() === labelName.toLowerCase().trim()
     );
+
     if (matchedType) {
       return matchedType;
     }
