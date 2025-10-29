@@ -22,7 +22,6 @@ export async function GET(request: Request) {
     const { accessToken } = await auth.api.getAccessToken({
       body: {
         providerId: "github",
-        userId: session.user.id,
       },
       headers: headersList,
     });
@@ -31,20 +30,24 @@ export async function GET(request: Request) {
       auth: accessToken,
     });
 
-    const [response, userResponse] = await Promise.all([
-      octokit.rest.repos.listForAuthenticatedUser({
-        per_page: perPage,
-        page: page,
-        sort: "updated",
-        direction: "desc",
-      }),
-      octokit.rest.users.getAuthenticated(),
-    ]);
+    const userResponse = await octokit.rest.users.getAuthenticated();
+    const scopes = userResponse.headers["x-oauth-scopes"];
+    const scopeArray = scopes ? scopes.split(", ") : [];
+    const hasRepoScope = scopeArray.includes("repo");
+
+    const response = await octokit.rest.repos.listForAuthenticatedUser({
+      per_page: perPage,
+      page: page,
+      sort: "updated",
+      direction: "desc",
+      visibility: hasRepoScope ? "all" : "public",
+    });
 
     const repos = response.data;
-    const totalRepos =
-      userResponse.data.public_repos +
-      (userResponse.data.total_private_repos || 0);
+    const totalRepos = hasRepoScope
+      ? userResponse.data.public_repos +
+        (userResponse.data.total_private_repos || 0)
+      : userResponse.data.public_repos;
 
     const linkHeader = response.headers.link;
 
@@ -58,6 +61,7 @@ export async function GET(request: Request) {
     return NextResponse.json({
       repos,
       totalRepos,
+      limitedScope: !hasRepoScope,
       pagination: {
         page,
         perPage,
