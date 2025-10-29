@@ -2,43 +2,10 @@ import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { Octokit } from "octokit";
-import { createYouTrackIssue } from "@/lib/youtrack";
-
-const GITHUB_PROVIDER_ID = "github";
-const YOUTRACK_LABEL_PREFIX = "youtrack:";
-
-const TYPE_LABELS = [
-  "Bug",
-  "Cosmetics",
-  "Exception",
-  "Feature",
-  "Task",
-  "Usability Problem",
-  "Performance Problem",
-  "Epic",
-];
-
-type GitHubLabel = {
-  id?: number;
-  node_id?: string;
-  url?: string;
-  name?: string;
-  color?: string | null;
-  default?: boolean;
-  description?: string | null;
-};
-
-type GitHubIssue = {
-  number: number;
-  title: string;
-  body?: string | null;
-  labels?: Array<string | GitHubLabel>;
-};
-
-type YouTrackIssue = {
-  id: string;
-  [key: string]: any;
-};
+import { createYouTrackIssue, extractTypeFromLabels } from "@/lib/youtrack";
+import { GitHubIssue } from "@/types/github";
+import { YouTrackIssue } from "@/types/youtrack";
+import { GITHUB_PROVIDER_ID, YOUTRACK_LABEL_PREFIX } from "@/lib/constants";
 
 export async function POST(request: Request) {
   try {
@@ -71,7 +38,7 @@ export async function POST(request: Request) {
       repo,
     });
 
-    const createdIssues = await importIssues({
+    const createdIssues = await importGitHubIssuesToYouTrack({
       issues,
       projectId,
       octokit,
@@ -92,7 +59,7 @@ export async function POST(request: Request) {
   }
 }
 
-async function importIssues({
+async function importGitHubIssuesToYouTrack({
   issues,
   projectId,
   octokit,
@@ -116,7 +83,7 @@ async function importIssues({
       type: issueType,
     });
 
-    await addYouTrackLabel({
+    await addYouTrackLabelToGitHubIssue({
       octokit,
       owner,
       repo,
@@ -130,7 +97,7 @@ async function importIssues({
   return createdIssues;
 }
 
-async function addYouTrackLabel({
+async function addYouTrackLabelToGitHubIssue({
   octokit,
   owner,
   repo,
@@ -150,25 +117,4 @@ async function addYouTrackLabel({
     issue_number: issueNumber,
     labels: [youtrackLabel],
   });
-}
-
-function extractTypeFromLabels(
-  labels?: Array<string | GitHubLabel>
-): string | undefined {
-  if (!labels) return;
-
-  for (const label of labels) {
-    const labelName = typeof label === "string" ? label : label.name;
-    if (!labelName) continue;
-
-    const matchedType = TYPE_LABELS.find(
-      (type) => type.toLowerCase() === labelName.toLowerCase().trim()
-    );
-
-    if (matchedType) {
-      return matchedType;
-    }
-  }
-
-  return undefined;
 }

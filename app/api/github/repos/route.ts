@@ -2,15 +2,10 @@ import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { Octokit } from "octokit";
+import { GITHUB_PROVIDER_ID } from "@/lib/constants";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_PER_PAGE = 10;
-const GITHUB_PROVIDER_ID = "github";
-
-type PaginationParams = {
-  page: number;
-  perPage: number;
-};
 
 export async function GET(request: Request) {
   try {
@@ -68,9 +63,7 @@ export async function GET(request: Request) {
   }
 }
 
-function parsePaginationParams(
-  searchParams: URLSearchParams
-): PaginationParams {
+function parsePaginationParams(searchParams: URLSearchParams) {
   return {
     page: parseInt(searchParams.get("page") || String(DEFAULT_PAGE), 10),
     perPage: parseInt(
